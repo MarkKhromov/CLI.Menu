@@ -4,14 +4,14 @@ using System.Threading;
 namespace CLI.Menu.Demo {
     class Program {
         static void Main(string[] args) {
-            var info = new MenuInfo {
+            Menu.Show(new MenuInfo {
                 ItemInfos = {
                     new MenuItemInfo(@"Show ""Test 1"" text and sleep 3 seconds", () => {
                         Console.WriteLine("Test 1");
                         Thread.Sleep(3000);
                     }),
                     new MenuItemInfo("Show sub-menu", () => {
-                        new Menu(new MenuInfo {
+                        Menu.Show(new MenuInfo {
                             ItemInfos = {
                                 new MenuItemInfo(@"Show ""Test 2"" text and sleep 5 seconds", () => {
                                     Console.WriteLine("Test 2");
@@ -20,7 +20,7 @@ namespace CLI.Menu.Demo {
                             },
                             ExitName = "Back",
                             Name = "Sub-menu 1:"
-                        }).Show();
+                        });
                     }),
                     new MenuItemInfo(@"Show ""Test 3"" text and sleep 1 seconds", () => {
                         Console.WriteLine("Test 3");
@@ -101,8 +101,7 @@ namespace CLI.Menu.Demo {
                 },
                 ExitName = "Exit",
                 Name = "Menu:"
-            };
-            new Menu(info).Show();
+            });
         }
     }
 }

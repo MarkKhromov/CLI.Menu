@@ -1,15 +1,9 @@
 ﻿using System;
 
 namespace CLI.Menu {
-    public class Menu {
-        public Menu(MenuInfo info) {
-            this.info = info;
-        }
-
-        readonly MenuInfo info;
-
+    public static class Menu {
         // TODO: Test it!
-        public void Show() {
+        public static void Show(MenuInfo info) {
             ConsoleKey key;
             do {
                 Console.Clear();
