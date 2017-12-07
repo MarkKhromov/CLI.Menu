@@ -5,9 +5,10 @@ using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace CLI.Menu {
-    public class MenuItemInfos : IEnumerable<MenuItemInfo> {
-        public MenuItemInfos() {
-            items = new Collection<MenuItemInfo>();
+    public class MenuItemInfos : IEnumerable<MenuItemBuilder> {
+        internal MenuItemInfos(MenuBuilder menuBuilder) {
+            this.menuBuilder = menuBuilder;
+            items = new Collection<MenuItemBuilder>();
             available = new Queue<ConsoleKey>(new[] {
                 ConsoleKey.D1,
                 ConsoleKey.D2,
@@ -21,43 +22,44 @@ namespace CLI.Menu {
             });
         }
 
-        public MenuItemInfo this[ConsoleKey key] => items.SingleOrDefault(x => x.Key == key);
+        public MenuItemBuilder this[ConsoleKey key] => items.SingleOrDefault(x => x.Key == key);
 
-        readonly Collection<MenuItemInfo> items;
+        readonly MenuBuilder menuBuilder;
+        readonly Collection<MenuItemBuilder> items;
         readonly Queue<ConsoleKey> available;
-        MenuInfo nextMenuInfo;
+        MenuBuilder nextMenuBuilder;
 
-        public bool Add(MenuItemInfo itemInfo) {
-            try {
-                if(items.Count == 9 && nextMenuInfo == null) {
-                    nextMenuInfo = new MenuInfo {
-                        ExitName = "Back",
-                        KeyDisplayNameProvider = DefaultKeyDisplayNameProvider.Instance,
-                        Name = "Menu:"
-                    };
-                    var nextItemInfo = new MenuItemInfo("Next", () => {
-                        new Menu(nextMenuInfo).Show();
-                    });
-                    var lastItemInfo = this[ConsoleKey.D9];
-                    items.Remove(lastItemInfo);
-                    available.Enqueue(ConsoleKey.D9);
-                    items.Add(nextItemInfo);
-                    nextItemInfo.Key = available.Dequeue();
-                    nextMenuInfo.ItemInfos.Add(lastItemInfo);
-                    nextMenuInfo.ItemInfos.Add(itemInfo);
-                    return true;
-                }
-                if(nextMenuInfo != null) {
-                    nextMenuInfo.ItemInfos.Add(itemInfo);
-                    return true;
-                }
-                items.Add(itemInfo);
-                itemInfo.Key = available.Dequeue();
-                return true;
-            } catch { return false; }
+        public void Add(MenuItemBuilder itemInfo) {
+            if(items.Count == 9 && nextMenuBuilder == null) {
+                nextMenuBuilder = MenuBuilder.Create()
+                    .Set(x => x.Name, menuBuilder.Info.Name)
+                    .Set(x => x.NextName, menuBuilder.Info.NextName)
+                    .Set(x => x.BackName, menuBuilder.Info.BackName)
+                    .Set(x => x.ExitName, menuBuilder.Info.BackName)
+                    .Set(x => x.KeyDisplayNameProvider, DefaultKeyDisplayNameProvider.Instance)
+                ;
+                var nextItemInfo = new MenuItemBuilder(menuBuilder)
+                    .Set(x => x.Name, menuBuilder.Info.NextName)
+                    .Set(x => x.Action, nextMenuBuilder.Show)
+                ;
+                var lastItemInfo = this[ConsoleKey.D9];
+                items.Remove(lastItemInfo);
+                available.Enqueue(ConsoleKey.D9);
+                items.Add(nextItemInfo);
+                nextItemInfo.Key = available.Dequeue();
+                nextMenuBuilder.Items.Add(lastItemInfo);
+                nextMenuBuilder.Items.Add(itemInfo);
+                return;
+            }
+            if(nextMenuBuilder != null) {
+                nextMenuBuilder.Items.Add(itemInfo);
+                return;
+            }
+            items.Add(itemInfo);
+            itemInfo.Key = available.Dequeue();
         }
 
-        IEnumerator<MenuItemInfo> IEnumerable<MenuItemInfo>.GetEnumerator() {
+        IEnumerator<MenuItemBuilder> IEnumerable<MenuItemBuilder>.GetEnumerator() {
             return items.GetEnumerator();
         }
 
