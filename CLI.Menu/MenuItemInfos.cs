@@ -25,9 +25,32 @@ namespace CLI.Menu {
 
         readonly Collection<MenuItemInfo> items;
         readonly Queue<ConsoleKey> available;
+        MenuInfo nextMenuInfo;
 
         public bool Add(MenuItemInfo itemInfo) {
             try {
+                if(items.Count == 9 && nextMenuInfo == null) {
+                    nextMenuInfo = new MenuInfo {
+                        ExitName = "Back",
+                        KeyDisplayNameProvider = DefaultKeyDisplayNameProvider.Instance,
+                        Name = "Menu:"
+                    };
+                    var nextItemInfo = new MenuItemInfo("Next", () => {
+                        new Menu(nextMenuInfo).Show();
+                    });
+                    var lastItemInfo = this[ConsoleKey.D9];
+                    items.Remove(lastItemInfo);
+                    available.Enqueue(ConsoleKey.D9);
+                    items.Add(nextItemInfo);
+                    nextItemInfo.Key = available.Dequeue();
+                    nextMenuInfo.ItemInfos.Add(lastItemInfo);
+                    nextMenuInfo.ItemInfos.Add(itemInfo);
+                    return true;
+                }
+                if(nextMenuInfo != null) {
+                    nextMenuInfo.ItemInfos.Add(itemInfo);
+                    return true;
+                }
                 items.Add(itemInfo);
                 itemInfo.Key = available.Dequeue();
                 return true;
