@@ -4,7 +4,7 @@ using System.Threading;
 namespace CLI.Menu.Demo {
     class Program {
         #region Inner classes
-        class SubMenuKeyDisplayNameProvider : DefaultKeyDisplayNameProvider {
+        class SubMenuDisplayNameProvider : DefaultDisplayNameProvider {
             public override string MenuTitle => "Sub-menu:";
         }
         #endregion
@@ -13,7 +13,7 @@ namespace CLI.Menu.Demo {
             MenuBuilder.Create()
                 .Item(@"Show ""Test 1"" text and sleep 3 seconds", () => { Console.WriteLine("Test 1"); Thread.Sleep(3000); })
                 .Item("Show sub-menu", () => {
-                    MenuBuilder.Create(new SubMenuKeyDisplayNameProvider())
+                    MenuBuilder.Create(new SubMenuDisplayNameProvider())
                         .Item(@"Show ""Test 2"" text and sleep 5 seconds", () => {
                             Console.WriteLine("Test 2");
                             Thread.Sleep(5000);

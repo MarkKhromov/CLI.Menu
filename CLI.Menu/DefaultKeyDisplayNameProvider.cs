@@ -1,18 +1,18 @@
 ﻿using System;
 
 namespace CLI.Menu {
-    public class DefaultKeyDisplayNameProvider : IKeyDisplayNameProvider {
-        public static DefaultKeyDisplayNameProvider Instance = new DefaultKeyDisplayNameProvider();
+    public class DefaultDisplayNameProvider : IDisplayNameProvider {
+        public static DefaultDisplayNameProvider Instance = new DefaultDisplayNameProvider();
 
-        protected DefaultKeyDisplayNameProvider() { }
+        protected DefaultDisplayNameProvider() { }
 
         public virtual string MenuTitle => "Menu:";
 
-        public virtual string NextButtonText => "Next";
+        public virtual string NextDisplayName => "Next";
 
-        public virtual string BackButtonText => "Back";
+        public virtual string BackDisplayName => "Back";
 
-        public virtual string ExitButtonText => "Exit";
+        public virtual string ExitDisplayName => "Exit";
 
         public virtual string GetDisplayName(ConsoleKey? key) {
             switch(key) {

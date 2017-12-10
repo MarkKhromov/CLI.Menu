@@ -3,10 +3,10 @@ using NUnit.Framework;
 
 namespace CLI.Menu.Tests {
     [TestFixture]
-    public class KeyDisplayNameProviderTests {
+    public class DisplayNameProviderTests {
         [Test]
         public void DefaultProviderTest() {
-            IKeyDisplayNameProvider defaultProvider = DefaultKeyDisplayNameProvider.Instance;
+            IDisplayNameProvider defaultProvider = DefaultDisplayNameProvider.Instance;
             Assert.AreEqual("0", defaultProvider.GetDisplayName(ConsoleKey.D0));
             Assert.AreEqual("1", defaultProvider.GetDisplayName(ConsoleKey.D1));
             Assert.AreEqual("2", defaultProvider.GetDisplayName(ConsoleKey.D2));
@@ -23,18 +23,18 @@ namespace CLI.Menu.Tests {
 
         [Test]
         public void CustomProviderTest() {
-            IKeyDisplayNameProvider defaultProvider = new CustomKeyDisplayNameProvider();
+            IDisplayNameProvider defaultProvider = new CustomKeyDisplayNameProvider();
             Assert.AreEqual("Test text 1", defaultProvider.GetDisplayName(ConsoleKey.A));
             Assert.AreEqual("Test text 2", defaultProvider.GetDisplayName(null));
             Assert.AreEqual("Test text 2", defaultProvider.GetDisplayName(ConsoleKey.B));
         }
 
-        class CustomKeyDisplayNameProvider : IKeyDisplayNameProvider {
-            string IKeyDisplayNameProvider.MenuTitle => throw new NotImplementedException();
-            string IKeyDisplayNameProvider.NextButtonText => throw new NotImplementedException();
-            string IKeyDisplayNameProvider.BackButtonText => throw new NotImplementedException();
-            string IKeyDisplayNameProvider.ExitButtonText => throw new NotImplementedException();
-            string IKeyDisplayNameProvider.GetDisplayName(ConsoleKey? key) {
+        class CustomKeyDisplayNameProvider : IDisplayNameProvider {
+            string IDisplayNameProvider.MenuTitle => throw new NotImplementedException();
+            string IDisplayNameProvider.NextDisplayName => throw new NotImplementedException();
+            string IDisplayNameProvider.BackDisplayName => throw new NotImplementedException();
+            string IDisplayNameProvider.ExitDisplayName => throw new NotImplementedException();
+            string IDisplayNameProvider.GetDisplayName(ConsoleKey? key) {
                 switch(key) {
                     case ConsoleKey.A:
                         return "Test text 1";

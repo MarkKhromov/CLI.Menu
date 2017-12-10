@@ -7,18 +7,18 @@ using System.Linq;
 namespace CLI.Menu {
     public class MenuItemInfos : IEnumerable<MenuItemBuilder> {
         #region Inner classes
-        class InnerMenuKeyDisplayNameProvider : IKeyDisplayNameProvider {
-            public InnerMenuKeyDisplayNameProvider(IKeyDisplayNameProvider parentKeyDisplayNameProvider) {
-                this.parentKeyDisplayNameProvider = parentKeyDisplayNameProvider;
+        class InnerMenuDisplayNameProvider : IDisplayNameProvider {
+            public InnerMenuDisplayNameProvider(IDisplayNameProvider parentDisplayNameProvider) {
+                this.parentDisplayNameProvider = parentDisplayNameProvider;
             }
 
-            readonly IKeyDisplayNameProvider parentKeyDisplayNameProvider;
+            readonly IDisplayNameProvider parentDisplayNameProvider;
 
-            string IKeyDisplayNameProvider.MenuTitle => parentKeyDisplayNameProvider.MenuTitle;
-            string IKeyDisplayNameProvider.NextButtonText => parentKeyDisplayNameProvider.NextButtonText;
-            string IKeyDisplayNameProvider.BackButtonText => parentKeyDisplayNameProvider.BackButtonText;
-            string IKeyDisplayNameProvider.ExitButtonText => parentKeyDisplayNameProvider.BackButtonText;
-            string IKeyDisplayNameProvider.GetDisplayName(ConsoleKey? key) => parentKeyDisplayNameProvider.GetDisplayName(key);
+            string IDisplayNameProvider.MenuTitle => parentDisplayNameProvider.MenuTitle;
+            string IDisplayNameProvider.NextDisplayName => parentDisplayNameProvider.NextDisplayName;
+            string IDisplayNameProvider.BackDisplayName => parentDisplayNameProvider.BackDisplayName;
+            string IDisplayNameProvider.ExitDisplayName => parentDisplayNameProvider.BackDisplayName;
+            string IDisplayNameProvider.GetDisplayName(ConsoleKey? key) => parentDisplayNameProvider.GetDisplayName(key);
         }
         #endregion
 
@@ -48,13 +48,8 @@ namespace CLI.Menu {
         public void Add(MenuItemBuilder itemInfo) {
             if(items.Count == 9 && nextMenuBuilder == null) {
                 var parentInfo = menuBuilder.Info;
-                nextMenuBuilder = MenuBuilder.Create(new InnerMenuKeyDisplayNameProvider(menuBuilder.Info.KeyDisplayNameProvider));
-                    //.Set(x => x.Name, menuBuilder.Info.Name)
-                    //.Set(x => x.NextName, menuBuilder.Info.NextName)
-                    //.Set(x => x.BackName, menuBuilder.Info.BackName)
-                    //.Set(x => x.ExitName, menuBuilder.Info.BackName)
-                    //.Set(x => x.KeyDisplayNameProvider, DefaultKeyDisplayNameProvider.Instance)
-                var nextItemInfo = new MenuItemBuilder(menuBuilder.Info.KeyDisplayNameProvider.NextButtonText, nextMenuBuilder.Show);
+                nextMenuBuilder = MenuBuilder.Create(new InnerMenuDisplayNameProvider(menuBuilder.Info.DisplayNameProvider));
+                var nextItemInfo = new MenuItemBuilder(menuBuilder.Info.DisplayNameProvider.NextDisplayName, nextMenuBuilder.Show);
                 var lastItemInfo = this[ConsoleKey.D9];
                 items.Remove(lastItemInfo);
                 available.Enqueue(ConsoleKey.D9);
