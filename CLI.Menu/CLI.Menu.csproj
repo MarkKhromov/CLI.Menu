@@ -8,7 +8,7 @@
     <Authors>Mark Khromov</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Copyright>Copyright (c) Mark Khromov 2017</Copyright>
-    <Version>1.3.0</Version>
+    <Version>1.4.0</Version>
     <Description>Library for quick and convenient creation of the console menu.</Description>
   </PropertyGroup>
 

@@ -38,7 +38,7 @@ namespace CLI.Menu {
             });
         }
 
-        public MenuItemBuilder this[ConsoleKey key] => items.SingleOrDefault(x => x.Info.Key == key);
+        public MenuItemBuilder this[ConsoleKey key] => items.SingleOrDefault(x => x.Key == key);
 
         readonly MenuBuilder menuBuilder;
         readonly Collection<MenuItemBuilder> items;
@@ -47,14 +47,13 @@ namespace CLI.Menu {
 
         public void Add(MenuItemBuilder itemInfo) {
             if(items.Count == 9 && nextMenuBuilder == null) {
-                var parentInfo = menuBuilder.Info;
-                nextMenuBuilder = MenuBuilder.Create(new InnerMenuDisplayNameProvider(menuBuilder.Info.DisplayNameProvider));
-                var nextItemInfo = new MenuItemBuilder(menuBuilder.Info.DisplayNameProvider.NextDisplayName, nextMenuBuilder.Show);
+                nextMenuBuilder = MenuBuilder.Create(new InnerMenuDisplayNameProvider(menuBuilder.DisplayNameProvider));
+                var nextItemInfo = new MenuItemBuilder(menuBuilder.DisplayNameProvider.NextDisplayName, nextMenuBuilder.Show);
                 var lastItemInfo = this[ConsoleKey.D9];
                 items.Remove(lastItemInfo);
                 available.Enqueue(ConsoleKey.D9);
                 items.Add(nextItemInfo);
-                nextItemInfo.Info.Key = available.Dequeue();
+                nextItemInfo.Key = available.Dequeue();
                 nextMenuBuilder.Items.Add(lastItemInfo);
                 nextMenuBuilder.Items.Add(itemInfo);
                 return;
@@ -64,7 +63,7 @@ namespace CLI.Menu {
                 return;
             }
             items.Add(itemInfo);
-            itemInfo.Info.Key = available.Dequeue();
+            itemInfo.Key = available.Dequeue();
         }
 
         IEnumerator<MenuItemBuilder> IEnumerable<MenuItemBuilder>.GetEnumerator() {
