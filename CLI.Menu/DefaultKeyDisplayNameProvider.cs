@@ -4,9 +4,17 @@ namespace CLI.Menu {
     public class DefaultKeyDisplayNameProvider : IKeyDisplayNameProvider {
         public static DefaultKeyDisplayNameProvider Instance = new DefaultKeyDisplayNameProvider();
 
-        DefaultKeyDisplayNameProvider() { }
+        protected DefaultKeyDisplayNameProvider() { }
 
-        string IKeyDisplayNameProvider.GetDisplayName(ConsoleKey? key) {
+        public virtual string MenuTitle => "Menu:";
+
+        public virtual string NextButtonText => "Next";
+
+        public virtual string BackButtonText => "Back";
+
+        public virtual string ExitButtonText => "Exit";
+
+        public virtual string GetDisplayName(ConsoleKey? key) {
             switch(key) {
                 case ConsoleKey.D0:
                     return "0";

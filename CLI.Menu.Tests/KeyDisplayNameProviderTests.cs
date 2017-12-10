@@ -30,6 +30,10 @@ namespace CLI.Menu.Tests {
         }
 
         class CustomKeyDisplayNameProvider : IKeyDisplayNameProvider {
+            string IKeyDisplayNameProvider.MenuTitle => throw new NotImplementedException();
+            string IKeyDisplayNameProvider.NextButtonText => throw new NotImplementedException();
+            string IKeyDisplayNameProvider.BackButtonText => throw new NotImplementedException();
+            string IKeyDisplayNameProvider.ExitButtonText => throw new NotImplementedException();
             string IKeyDisplayNameProvider.GetDisplayName(ConsoleKey? key) {
                 switch(key) {
                     case ConsoleKey.A:

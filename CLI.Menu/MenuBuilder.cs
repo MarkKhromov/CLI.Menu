@@ -7,20 +7,20 @@ namespace CLI.Menu {
         public class MenuInfo {
             internal MenuInfo() { }
 
-            public string Name { get; set; }
-            public string NextName { get; set; }
-            public string BackName { get; set; }
-            public string ExitName { get; set; }
-            public IKeyDisplayNameProvider KeyDisplayNameProvider { get; set; }
+            IKeyDisplayNameProvider keyDisplayNameProvider;
+            public IKeyDisplayNameProvider KeyDisplayNameProvider {
+                get => keyDisplayNameProvider;
+                set => keyDisplayNameProvider = value ?? DefaultKeyDisplayNameProvider.Instance;
+            }
         }
         #endregion
 
-        public static MenuBuilder Create() {
-            return new MenuBuilder();
+        public static MenuBuilder Create(IKeyDisplayNameProvider keyDisplayNameProvider = null) {
+            return new MenuBuilder(keyDisplayNameProvider);
         }
 
-        public MenuBuilder() {
-            Info = new MenuInfo();
+        public MenuBuilder(IKeyDisplayNameProvider keyDisplayNameProvider = null) {
+            Info = new MenuInfo { KeyDisplayNameProvider = keyDisplayNameProvider };
             Items = new MenuItemInfos(this);
         }
 
@@ -32,10 +32,10 @@ namespace CLI.Menu {
             return this;
         }
 
-        public MenuItemBuilder Item() {
-            var item = new MenuItemBuilder(this);
+        public MenuBuilder Item(string name, Action action) {
+            var item = new MenuItemBuilder(name, action);
             Items.Add(item);
-            return item;
+            return this;
         }
 
         // TODO: Test it!
@@ -43,16 +43,16 @@ namespace CLI.Menu {
             ConsoleKey key;
             do {
                 Console.Clear();
-                if(!string.IsNullOrWhiteSpace(Info.Name)) {
+                if(!string.IsNullOrWhiteSpace(Info.KeyDisplayNameProvider.MenuTitle)) {
                     Console.WriteLine();
-                    Console.WriteLine($"\t{Info.Name}");
+                    Console.WriteLine($"\t{Info.KeyDisplayNameProvider.MenuTitle}");
                 }
                 Console.WriteLine();
                 foreach(var item in Items) {
-                    Console.WriteLine($"\t{(Info.KeyDisplayNameProvider ?? DefaultKeyDisplayNameProvider.Instance).GetDisplayName(item.Key)}. {item.Info.Name}");
+                    Console.WriteLine($"\t{(Info.KeyDisplayNameProvider).GetDisplayName(item.Info.Key)}. {item.Info.Name}");
                 }
                 Console.WriteLine();
-                Console.WriteLine($"\t0. {Info.ExitName}");
+                Console.WriteLine($"\t0. {Info.KeyDisplayNameProvider.ExitButtonText}");
                 Console.WriteLine();
                 Console.WriteLine();
                 Console.Write("\t");
