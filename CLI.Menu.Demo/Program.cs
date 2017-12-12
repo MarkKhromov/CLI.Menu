@@ -14,6 +14,7 @@ namespace CLI.Menu.Demo {
                 .Item(@"Show ""Test 1"" text and sleep 3 seconds", () => { Console.WriteLine("Test 1"); Thread.Sleep(3000); })
                 .Item("Show sub-menu", () => {
                     MenuBuilder.Create(new SubMenuDisplayNameProvider())
+                        .Indents(false)
                         .Item(@"Show ""Test 2"" text and sleep 5 seconds", () => {
                             Console.WriteLine("Test 2");
                             Thread.Sleep(5000);

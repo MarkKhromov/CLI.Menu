@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace CLI.Menu {
     public class MenuBuilder {
@@ -17,10 +18,17 @@ namespace CLI.Menu {
             set => displayNameProvider = value ?? DefaultDisplayNameProvider.Instance;
         }
         public MenuItemInfos Items { get; }
+        [DefaultValue(true)]
+        public bool ShowIndents { get; set; } = true;
 
         public MenuBuilder Item(string name, Action action) {
             var item = new MenuItemBuilder(name, action);
             Items.Add(item);
+            return this;
+        }
+
+        public MenuBuilder Indents(bool value) {
+            ShowIndents = value;
             return this;
         }
 
@@ -31,17 +39,20 @@ namespace CLI.Menu {
                 Console.Clear();
                 if(!string.IsNullOrWhiteSpace(DisplayNameProvider.MenuTitle)) {
                     Console.WriteLine();
-                    Console.WriteLine($"\t{DisplayNameProvider.MenuTitle}");
+                    ShowIndentIfNeeded();
+                    Console.WriteLine($"{DisplayNameProvider.MenuTitle}");
                 }
                 Console.WriteLine();
                 foreach(var item in Items) {
-                    Console.WriteLine($"\t{(DisplayNameProvider).GetDisplayName(item.Key)}. {item.Name}");
+                    ShowIndentIfNeeded();
+                    Console.WriteLine($"{(DisplayNameProvider).GetDisplayName(item.Key)}. {item.Name}");
                 }
                 Console.WriteLine();
-                Console.WriteLine($"\t{DisplayNameProvider.GetDisplayName(ConsoleKey.D0)}. {DisplayNameProvider.ExitDisplayName}");
+                ShowIndentIfNeeded();
+                Console.WriteLine($"{DisplayNameProvider.GetDisplayName(ConsoleKey.D0)}. {DisplayNameProvider.ExitDisplayName}");
                 Console.WriteLine();
                 Console.WriteLine();
-                Console.Write("\t");
+                ShowIndentIfNeeded();
                 key = Console.ReadKey(true).Key;
                 var action = Items[key]?.Action;
                 if(action != null) {
@@ -49,6 +60,12 @@ namespace CLI.Menu {
                     action();
                 }
             } while(key != ConsoleKey.D0);
+        }
+
+        void ShowIndentIfNeeded() {
+            if(ShowIndents) {
+                Console.Write("\t");
+            }
         }
     }
 }
