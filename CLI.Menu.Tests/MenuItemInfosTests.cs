@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using NUnit.Framework;
 
 namespace CLI.Menu.Tests {
@@ -29,7 +28,7 @@ namespace CLI.Menu.Tests {
             menuItemInfos.Add(new MenuItemBuilder(null, null));
             Assert.AreEqual(9, menuItemInfos.Count());
             menuItemInfos.Add(new MenuItemBuilder(null, null));
-            Assert.AreEqual(9, menuItemInfos.Count());
+            Assert.AreEqual(10, menuItemInfos.Count());
         }
 
         [Test]
@@ -44,9 +43,9 @@ namespace CLI.Menu.Tests {
             Assert.AreEqual(1, menuItemInfos.Count());
             menuItemInfos.Add(menuItem2);
             Assert.AreEqual(2, menuItemInfos.Count());
-            Assert.AreEqual(menuItem1, menuItemInfos[ConsoleKey.D1]);
-            Assert.AreEqual(menuItem2, menuItemInfos[ConsoleKey.D2]);
-            Assert.AreEqual(null, menuItemInfos[ConsoleKey.D3]);
+            Assert.AreEqual(menuItem1, menuItemInfos[1]);
+            Assert.AreEqual(menuItem2, menuItemInfos[2]);
+            Assert.AreEqual(null, menuItemInfos[3]);
         }
     }
 }
