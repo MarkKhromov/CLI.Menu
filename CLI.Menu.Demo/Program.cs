@@ -19,7 +19,7 @@ namespace CLI.Menu.Demo {
                             Console.WriteLine("Test 2");
                             Thread.Sleep(5000);
                         })
-                        .Show()
+                        .Show(DisplayMode.Separate)
                     ;
                 })
                 .Item(@"Show ""Test 3"" text and sleep 1 seconds", () => { Console.WriteLine("Test 3"); Thread.Sleep(1000); })
@@ -41,7 +41,7 @@ namespace CLI.Menu.Demo {
                 .Item(@"Show ""Test 19"" text and sleep 1 seconds", () => { Console.WriteLine("Test 19"); Thread.Sleep(1000); })
                 .Item(@"Show ""Test 20"" text and sleep 1 seconds", () => { Console.WriteLine("Test 20"); Thread.Sleep(1000); })
                 .Item(@"Show ""Test 21"" text and sleep 1 seconds", () => { Console.WriteLine("Test 21"); Thread.Sleep(1000); })
-                .Show()
+                .Show(DisplayMode.Separate)
             ;
         }
     }

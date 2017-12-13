@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace CLI.Menu {
     public class MenuItemInfos : IEnumerable<MenuItemBuilder> {
@@ -18,56 +15,37 @@ namespace CLI.Menu {
             string IDisplayNameProvider.NextDisplayName => parentDisplayNameProvider.NextDisplayName;
             string IDisplayNameProvider.BackDisplayName => parentDisplayNameProvider.BackDisplayName;
             string IDisplayNameProvider.ExitDisplayName => parentDisplayNameProvider.BackDisplayName;
-            string IDisplayNameProvider.GetDisplayName(ConsoleKey? key) => parentDisplayNameProvider.GetDisplayName(key);
+            string IDisplayNameProvider.GetDisplayName(int key) => parentDisplayNameProvider.GetDisplayName(key);
         }
         #endregion
 
         internal MenuItemInfos(MenuBuilder menuBuilder) {
             this.menuBuilder = menuBuilder;
-            items = new Collection<MenuItemBuilder>();
-            available = new Queue<ConsoleKey>(new[] {
-                ConsoleKey.D1,
-                ConsoleKey.D2,
-                ConsoleKey.D3,
-                ConsoleKey.D4,
-                ConsoleKey.D5,
-                ConsoleKey.D6,
-                ConsoleKey.D7,
-                ConsoleKey.D8,
-                ConsoleKey.D9
-            });
+            items = new Dictionary<int, MenuItemBuilder>();
         }
 
-        public MenuItemBuilder this[ConsoleKey key] => items.SingleOrDefault(x => x.Key == key);
+        public MenuItemBuilder this[int key] {
+            get {
+                MenuItemBuilder item = null;
+                items.TryGetValue(key, out item);
+                return item;
+            }
+        }
+
+        public int Count { get { return items.Count; } }
 
         readonly MenuBuilder menuBuilder;
-        readonly Collection<MenuItemBuilder> items;
-        readonly Queue<ConsoleKey> available;
-        MenuBuilder nextMenuBuilder;
+        readonly Dictionary<int, MenuItemBuilder> items;
+        int currentItemNumber = 1;
 
         public void Add(MenuItemBuilder itemInfo) {
-            if(items.Count == 9 && nextMenuBuilder == null) {
-                nextMenuBuilder = MenuBuilder.Create(new InnerMenuDisplayNameProvider(menuBuilder.DisplayNameProvider));
-                var nextItemInfo = new MenuItemBuilder(menuBuilder.DisplayNameProvider.NextDisplayName, nextMenuBuilder.Show);
-                var lastItemInfo = this[ConsoleKey.D9];
-                items.Remove(lastItemInfo);
-                available.Enqueue(ConsoleKey.D9);
-                items.Add(nextItemInfo);
-                nextItemInfo.Key = available.Dequeue();
-                nextMenuBuilder.Items.Add(lastItemInfo);
-                nextMenuBuilder.Items.Add(itemInfo);
-                return;
-            }
-            if(nextMenuBuilder != null) {
-                nextMenuBuilder.Items.Add(itemInfo);
-                return;
-            }
-            items.Add(itemInfo);
-            itemInfo.Key = available.Dequeue();
+            itemInfo.Key = currentItemNumber;
+            items.Add(currentItemNumber, itemInfo);
+            currentItemNumber++;
         }
 
         IEnumerator<MenuItemBuilder> IEnumerable<MenuItemBuilder>.GetEnumerator() {
-            return items.GetEnumerator();
+            return items.Values.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator() {

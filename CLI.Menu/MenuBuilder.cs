@@ -12,6 +12,7 @@ namespace CLI.Menu {
             Items = new MenuItemInfos(this);
         }
 
+        int startItemNumber = 1;
         IDisplayNameProvider displayNameProvider;
         public IDisplayNameProvider DisplayNameProvider {
             get => displayNameProvider;
@@ -33,8 +34,9 @@ namespace CLI.Menu {
         }
 
         // TODO: Test it!
-        public void Show() {
-            ConsoleKey key;
+        public void Show(DisplayMode displayMode) {
+            var key = -1;
+            var nextNeeded = false;
             do {
                 Console.Clear();
                 if(!string.IsNullOrWhiteSpace(DisplayNameProvider.MenuTitle)) {
@@ -43,23 +45,66 @@ namespace CLI.Menu {
                     Console.WriteLine($"{DisplayNameProvider.MenuTitle}");
                 }
                 Console.WriteLine();
-                foreach(var item in Items) {
-                    ShowIndentIfNeeded();
-                    Console.WriteLine($"{(DisplayNameProvider).GetDisplayName(item.Key)}. {item.Name}");
+                switch(displayMode) {
+                    case DisplayMode.Linear:
+                        foreach(var item in Items) {
+                            ShowIndentIfNeeded();
+                            Console.WriteLine($"{(DisplayNameProvider).GetDisplayName(item.Key)}. {item.Name}");
+                        }
+                        break;
+                    case DisplayMode.Separate:
+                        nextNeeded = Items.Count > 9;
+                        if(nextNeeded) {
+                            var count = Math.Min(Items.Count - startItemNumber + 1, 8);
+                            for(var i = 0; i < count; i++) {
+                                var item = Items[startItemNumber + i];
+                                ShowIndentIfNeeded();
+                                Console.WriteLine($"{(DisplayNameProvider).GetDisplayName(i + 1)}. {item.Name}");
+                            }
+                            if(startItemNumber + count - 1 != Items.Count) {
+                                ShowIndentIfNeeded();
+                                Console.WriteLine($"{(DisplayNameProvider).GetDisplayName(9)}. {DisplayNameProvider.NextDisplayName}");
+                            }
+                        } else {
+                            foreach(var item in Items) {
+                                ShowIndentIfNeeded();
+                                Console.WriteLine($"{(DisplayNameProvider).GetDisplayName(item.Key)}. {item.Name}");
+                            }
+                        }
+                        break;
+                    default:
+                        throw new NotSupportedException();
                 }
                 Console.WriteLine();
                 ShowIndentIfNeeded();
-                Console.WriteLine($"{DisplayNameProvider.GetDisplayName(ConsoleKey.D0)}. {DisplayNameProvider.ExitDisplayName}");
+                var exitDisplayName = startItemNumber == 1 ? DisplayNameProvider.ExitDisplayName : DisplayNameProvider.BackDisplayName;
+                Console.WriteLine($"{DisplayNameProvider.GetDisplayName(0)}. {exitDisplayName}");
                 Console.WriteLine();
                 Console.WriteLine();
                 ShowIndentIfNeeded();
-                key = Console.ReadKey(true).Key;
-                var action = Items[key]?.Action;
-                if(action != null) {
-                    Console.Clear();
-                    action();
+                if(!int.TryParse(Console.ReadLine(), out key)) {
+                    continue;
                 }
-            } while(key != ConsoleKey.D0);
+                if(nextNeeded) {
+                    if(key > 9) {
+                        continue;
+                    }
+                    if(key == 9) {
+                        startItemNumber += 8;
+                        Show(displayMode);
+                        continue;
+                    }
+                }
+                if(key == 0 && startItemNumber != 1) {
+                    startItemNumber -= 8;
+                } else {
+                    var action = Items[key + startItemNumber - 1]?.Action;
+                    if(action != null) {
+                        Console.Clear();
+                        action();
+                    }
+                }
+            } while(key != 0);
         }
 
         void ShowIndentIfNeeded() {

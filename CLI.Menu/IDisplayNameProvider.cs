@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace CLI.Menu {
+﻿namespace CLI.Menu {
     public interface IDisplayNameProvider {
-        string GetDisplayName(ConsoleKey? key);
+        string GetDisplayName(int key);
         string MenuTitle { get; }
         string NextDisplayName { get; }
         string BackDisplayName { get; }
