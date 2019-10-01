@@ -83,6 +83,7 @@ namespace CLI.Menu {
                 Console.WriteLine();
                 ShowIndentIfNeeded();
                 if(!int.TryParse(Console.ReadLine(), out key)) {
+                    key = -1;
                     continue;
                 }
                 if(nextNeeded) {
